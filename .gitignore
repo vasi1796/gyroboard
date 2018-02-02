@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+gaze_recognition/\.idea/
+
+gaze_recognition/center/
+
+gaze_recognition/right/
