@@ -111,3 +111,7 @@ gaze_recognition/right/
 gaze_recognition/left/
 
 gaze_recognition/eyes_dataset\.pkl\.gz
+
+gaze_recognition/model\.h5
+
+gaze_recognition/model\.json
