@@ -1,13 +1,10 @@
-
-from keras.models import Model,model_from_json  # basic class for specifying and training a neural network
+from keras.models import Model  # basic class for specifying and training a neural network
 from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
 from keras.utils import np_utils  # utilities for one-hot encoding of ground truth values
 import numpy as np
 import gzip
 import pickle
 
-def save_model(model):
-    pass
 
 def load_data(dataset):
     with gzip.open(dataset, 'rb') as f:
@@ -19,7 +16,7 @@ def load_data(dataset):
 
 
 batch_size = 32  # in each iteration, we consider 32 training examples at once
-num_epochs = 50  # we iterate 200 times over the entire training set
+num_epochs = 200  # we iterate 200 times over the entire training set
 kernel_size = 3  # we will use 3x3 kernels throughout
 pool_size = 2  # we will use 2x2 pooling throughout
 conv_depth_1 = 32  # we will initially have 32 kernels per conv. layer...
@@ -27,18 +24,9 @@ conv_depth_2 = 64  # ...switching to 64 after the first pooling layer
 drop_prob_1 = 0.25  # dropout after pooling with probability 0.25
 drop_prob_2 = 0.5  # dropout in the FC layer with probability 0.5
 hidden_size = 512  # the FC layer will have 512 neurons
-from keras.datasets import cifar10
-#(X_train, y_train), (X_test, y_test) = cifar10.load_data() # fetch CIFAR-10 data
-X_train, y_train, X_test, y_test = load_data('eyes_dataset.pkl.gz')
-X_train = np.asarray(X_train)
-y_train = np.asarray(y_train)
-X_test = np.asarray(X_test)
-y_test = np.asarray(y_test)
 
-X_train.resize((2570, 50, 140, 1))
-X_test.resize((420, 50, 140, 1))
-y_train.resize((2570,1))
-y_test.resize((420,1))
+# (X_train, y_train), (X_test, y_test) = cifar10.load_data() # fetch CIFAR-10 data
+X_train, y_train, X_test, y_test = load_data('eyes_dataset.pkl.gz')
 
 num_train, height, width, depth = X_train.shape  # there are 50000 training examples in CIFAR-10
 num_test = X_test.shape[0]  # there are 10000 test examples in CIFAR-10

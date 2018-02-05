@@ -1,21 +1,20 @@
 import cv2
-import numpy as np
 
 cap = cv2.VideoCapture(0)
 face_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_eye.xml')
-index ="1"
+index = "1"
 if __name__ == "__main__":
     while True:
         ret, img = cap.read()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
-            roi_gray = gray[int(y + 30):int(y + h / 1.9), x+25:x + w-25]
-            roi_gray=cv2.resize(roi_gray,(140,50))
-            #cv2.equalizeHist(roi_gray, roi_gray)
+            roi_gray = gray[int(y + 30):int(y + h / 1.9), x + 25:x + w - 25]
+            roi_gray = cv2.resize(roi_gray, (140, 50))
+            # cv2.equalizeHist(roi_gray, roi_gray)
             roi_color = img[int(y + 20):y + h, x:x + w]
             cv2.imwrite("center/img" + index + ".jpg", roi_gray)
             no = int(index) + 1

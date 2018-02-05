@@ -1,4 +1,4 @@
-from keras.models import Model,model_from_json  # basic class for specifying and training a neural network
+from keras.models import model_from_json  # basic class for specifying and training a neural network
 import cv2
 import numpy as np
 
@@ -20,9 +20,9 @@ while True:
     for (x, y, w, h) in faces:
         roi_gray = gray[int(y + 30):int(y + h / 1.9), x + 25:x + w - 25]
         roi_gray = cv2.resize(roi_gray, (140, 50))
-        image=np.asarray(roi_gray)
-        image.resize((1,50,140,1))
-        image=image.astype(np.float32)
+        image = np.asarray(roi_gray)
+        image.resize((1, 50, 140, 1))
+        image = image.astype(np.float32)
         image /= np.max(image)  # Normalise data to [0, 1] range
-        prediction=loaded_model.predict(image,batch_size=32,verbose=0)
+        prediction = loaded_model.predict(image, batch_size=32, verbose=0)
         print(np.argmax(prediction))

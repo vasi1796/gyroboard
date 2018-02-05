@@ -1,7 +1,10 @@
-import gzip, pickle
+import gzip
+import pickle
 from os import listdir
 from os.path import isfile, join
+
 import cv2
+import numpy as np
 
 
 def dump_dataset(name, dataset):
@@ -60,6 +63,15 @@ for n in range(0, len(only_center_files)):
         else:
             X_test.append(mat)
             Y_test.append(2)
+
+X_train = np.asarray(X_train)
+Y_train = np.asarray(Y_train)
+X_test = np.asarray(X_test)
+Y_test = np.asarray(Y_test)
+X_train.resize((2570, 50, 140, 1))
+X_test.resize((420, 50, 140, 1))
+Y_train.resize((2570, 1))
+Y_test.resize((420, 1))
 
 dataset = [X_train, Y_train, X_test, Y_test]
 dump_dataset('eyes_dataset.pkl.gz', dataset)
