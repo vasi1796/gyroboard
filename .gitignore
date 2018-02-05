@@ -105,3 +105,9 @@ gaze_recognition/\.idea/
 gaze_recognition/center/
 
 gaze_recognition/right/
+
+\.idea/
+
+gaze_recognition/left/
+
+gaze_recognition/eyes_dataset\.pkl\.gz
