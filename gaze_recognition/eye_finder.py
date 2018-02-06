@@ -24,7 +24,7 @@ if __name__ == "__main__":
                 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
                 cl1 = clahe.apply(roi_gray)
                 cv2.imshow("cl", cl1)
-                cv2.imwrite("right/img" + index + ".jpg", cl1)
+               #cv2.imwrite("right/img" + index + ".jpg", cl1)
 
             """
             roi_color = img[int(y + 20):y + h, x:x + w]

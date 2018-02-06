@@ -117,3 +117,7 @@ gaze_recognition/model\.h5
 gaze_recognition/model\.json
 
 gaze_recognition/Graph/
+
+*.h5
+
+*.json

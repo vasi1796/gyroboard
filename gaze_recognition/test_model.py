@@ -6,12 +6,12 @@ cap = cv2.VideoCapture(0)
 face_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 
-json_file = open('model.json', 'r')
+json_file = open('model_new.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 # load weights into new model
-loaded_model.load_weights("model.h5")
+loaded_model.load_weights("model_new.h5")
 print("Loaded model from disk")
 while True:
     ret, img = cap.read()
@@ -23,10 +23,11 @@ while True:
         roi_gray = cv2.resize(roi_gray, (140, 50))
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
         cl1 = clahe.apply(roi_gray)
-
+        cv2.imshow('face',cl1)
+        cv2.waitKey(1)
         #prepare input for model
         image = np.asarray(roi_gray)
-        image.resize((1, 140, 50, 1))
+        image.resize((1, 50, 140, 1))
         image = image.astype(np.float32)
         image /= np.max(image)  # Normalise data to [0, 1] range
         prediction = loaded_model.predict(image, batch_size=32, verbose=0)
