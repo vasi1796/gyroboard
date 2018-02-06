@@ -1,6 +1,7 @@
 from keras.models import Model  # basic class for specifying and training a neural network
 from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
 from keras.utils import np_utils  # utilities for one-hot encoding of ground truth values
+from keras.callbacks import TensorBoard
 import numpy as np
 import gzip
 import pickle
@@ -16,7 +17,7 @@ def load_data(dataset):
 
 
 batch_size = 32  # in each iteration, we consider 32 training examples at once
-num_epochs = 200  # we iterate 200 times over the entire training set
+num_epochs = 10  # we iterate 200 times over the entire training set
 kernel_size = 3  # we will use 3x3 kernels throughout
 pool_size = 2  # we will use 2x2 pooling throughout
 conv_depth_1 = 32  # we will initially have 32 kernels per conv. layer...
@@ -57,6 +58,8 @@ hidden = Dense(hidden_size, activation='relu')(flat)
 drop_3 = Dropout(drop_prob_2)(hidden)
 out = Dense(num_classes, activation='softmax')(drop_3)
 
+tbCallback = TensorBoard(log_dir='./Graph', histogram_freq=5, write_graph=True, write_images=True)
+
 model = Model(inputs=inp, outputs=out)  # To define a model, just specify its input and output layers
 
 model.compile(loss='categorical_crossentropy',  # using the cross-entropy loss function
@@ -65,7 +68,7 @@ model.compile(loss='categorical_crossentropy',  # using the cross-entropy loss f
 
 model.fit(X_train, Y_train,  # Train the model using the training set...
           batch_size=batch_size, epochs=num_epochs,
-          verbose=1, validation_split=0.1)  # ...holding out 10% of the data for validation
+          verbose=1, validation_split=0.1, callbacks=[tbCallback])  # ...holding out 10% of the data for validation
 model.evaluate(X_test, Y_test, verbose=1)  # Evaluate the trained model on the test set!
 
 model_json = model.to_json()
