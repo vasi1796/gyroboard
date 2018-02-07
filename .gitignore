@@ -121,3 +121,11 @@ gaze_recognition/Graph/
 *.h5
 
 *.json
+
+gaze_recognition/data/center/
+
+gaze_recognition/data/left/
+
+gaze_recognition/data/right/
+
+gaze_recognition/data/eyes_dataset\.pkl\.gz
