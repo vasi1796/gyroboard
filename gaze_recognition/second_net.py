@@ -1,5 +1,5 @@
-from keras.models import Model  # basic class for specifying and training a neural network
-from keras.layers import Input, Convolution2D, MaxPooling2D, Dense, Dropout, Activation, Flatten
+from keras.models import Sequential  # basic class for specifying and training a neural network
+from keras.layers import Convolution2D, MaxPooling2D, Dense, Dropout, Flatten, Activation
 from keras.utils import np_utils  # utilities for one-hot encoding of ground truth values
 from keras.callbacks import TensorBoard
 import numpy as np
@@ -40,22 +40,25 @@ X_test /= np.max(X_test)  # Normalise data to [0, 1] range
 Y_train = np_utils.to_categorical(y_train, num_classes)  # One-hot encode the labels
 Y_test = np_utils.to_categorical(y_test, num_classes)  # One-hot encode the labels
 
-inp = Input(shape=(height, width, depth))  # depth goes last in TensorFlow back-end (first in Theano)
-conv_1 = Convolution2D(conv_depth_1, (kernel_size, kernel_size), padding='same', activation='relu')(inp)
-pool_1 = MaxPooling2D(pool_size=(pool_size, pool_size))(conv_1)
-conv_2 = Convolution2D(conv_depth_1, (kernel_size, kernel_size), padding='same', activation='relu')(pool_1)
-pool_2 = MaxPooling2D(pool_size=(pool_size, pool_size))(conv_2)
-drop_1 = Dropout(drop_prob_1)(pool_2)
-conv_3 = Convolution2D(conv_depth_2, (kernel_size, kernel_size), padding='same', activation='relu')(drop_1)
-pool_3 = MaxPooling2D(pool_size=(pool_size, pool_size))(conv_3)
-flat = Flatten()(pool_3)
-hidden = Dense(hidden_size, activation='relu')(flat)
-drop_4 = Dropout(drop_prob_2)(hidden)
-out = Dense(num_classes, activation='softmax')(drop_4)
+model = Sequential()
+model.add(Convolution2D(conv_depth_1, (kernel_size, kernel_size), padding='same', input_shape=(height, width, depth)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(pool_size, pool_size)))
+model.add(Convolution2D(conv_depth_1, (kernel_size, kernel_size)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(pool_size, pool_size)))
+model.add(Dropout(drop_prob_1))
+model.add(Convolution2D(conv_depth_2, (kernel_size, kernel_size)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(pool_size, pool_size)))
+model.add(Flatten())
+model.add(Dense(hidden_size))
+model.add(Activation('relu'))
+model.add(Dropout(drop_prob_2))
+model.add(Dense(num_classes))
+model.add(Activation('softmax'))
 
 tbCallback = TensorBoard(log_dir='./Graph', histogram_freq=10, write_graph=True, write_images=True)
-
-model = Model(inputs=inp, outputs=out)  # To define a model, just specify its input and output layers
 
 model.compile(loss='categorical_crossentropy',  # using the cross-entropy loss function
               optimizer='adam',  # using the Adam optimiser
@@ -64,7 +67,10 @@ model.compile(loss='categorical_crossentropy',  # using the cross-entropy loss f
 model.fit(X_train, Y_train,  # Train the model using the training set...
           batch_size=batch_size, epochs=num_epochs,
           verbose=1, validation_split=0.2, callbacks=[tbCallback])  # ...holding out 10% of the data for validation
-model.evaluate(X_test, Y_test, verbose=1)  # Evaluate the trained model on the test set!
+score = model.evaluate(X_test, Y_test, verbose=1)  # Evaluate the trained model on the test set!
+
+print('Test score is: ', score[0])
+print('Accuracy is: ', score[1])
 
 model_json = model.to_json()
 with open("model_new.json", "w") as json_file:
