@@ -1,5 +1,5 @@
 from keras.models import Sequential  # basic class for specifying and training a neural network
-from keras.layers import Convolution2D, MaxPooling2D, Dense, Dropout, Flatten, Activation, BatchNormalization
+from keras.layers import Convolution2D, MaxPooling2D, Dense, Dropout, Flatten, Activation, BatchNormalization, Input
 from keras.utils import np_utils  # utilities for one-hot encoding of ground truth values
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.regularizers import l2  # L2-regularisation
@@ -17,6 +17,13 @@ def load_data(dataset):
         except:
             X_train, y_train, X_test, y_test = pickle.load(f)
         return X_train, y_train, X_test, y_test
+
+
+def shuffle_in_unison(a, b):
+    rng_state = np.random.get_state()
+    np.random.shuffle(a)
+    np.random.set_state(rng_state)
+    np.random.shuffle(b)
 
 
 timestr = time.strftime("%Y%m%d_%H%M")
@@ -45,27 +52,38 @@ X_test /= np.max(X_test)  # Normalise data to [0, 1] range
 Y_train = np_utils.to_categorical(y_train, num_classes)  # One-hot encode the labels
 Y_test = np_utils.to_categorical(y_test, num_classes)  # One-hot encode the labels
 
+shuffle_in_unison(X_train, Y_train)
+shuffle_in_unison(X_test, Y_test)
+
+"""import cv2
+for index in range(0, X_train.shape[0]):
+    cv2.imshow("image",X_train[index])
+    print(Y_train[index])
+    cv2.waitKey(0)"""
+
 model = Sequential()
-model.add(Convolution2D(conv_depth_1, (kernel_size, kernel_size), padding='same',input_shape=(height, width, depth),
+model.add(Convolution2D(conv_depth_1, (kernel_size, kernel_size), padding='same', input_shape=(height, width, depth),
                         kernel_initializer='he_uniform', kernel_regularizer=l2(l2_lambda)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(pool_size, pool_size)))
-model.add(Convolution2D(conv_depth_1, (kernel_size, kernel_size)))
+model.add(Convolution2D(conv_depth_1, (kernel_size, kernel_size), kernel_initializer='he_uniform',
+                        kernel_regularizer=l2(l2_lambda)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(pool_size, pool_size)))
 model.add(Dropout(drop_prob_1))
-model.add(Convolution2D(conv_depth_2, (kernel_size, kernel_size)))
+model.add(Convolution2D(conv_depth_2, (kernel_size, kernel_size), kernel_initializer='he_uniform',
+                        kernel_regularizer=l2(l2_lambda)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(pool_size, pool_size)))
 model.add(Flatten())
-model.add(Dense(hidden_size))
+model.add(Dense(hidden_size, kernel_initializer='he_uniform', kernel_regularizer=l2(l2_lambda)))
 model.add(Activation('relu'))
 model.add(Dropout(drop_prob_2))
 model.add(Dense(num_classes, kernel_initializer='glorot_uniform',
                 kernel_regularizer=l2(l2_lambda)))
 model.add(Activation('softmax'))
 
-tbCallback = TensorBoard(log_dir='./Graph', histogram_freq=10, write_graph=True, write_images=True)
+tbCallback = TensorBoard(log_dir='./Graph', histogram_freq=25, write_graph=True, write_images=True)
 
 model.compile(loss='categorical_crossentropy',  # using the cross-entropy loss function
               optimizer='adam',  # using the Adam optimiser
@@ -73,7 +91,7 @@ model.compile(loss='categorical_crossentropy',  # using the cross-entropy loss f
 
 model.fit(X_train, Y_train,  # Train the model using the training set...
           batch_size=batch_size, epochs=num_epochs,
-          verbose=1, validation_split=0.2, callbacks=[tbCallback, EarlyStopping(monitor='val_loss',
+          verbose=1, validation_split=0.1, callbacks=[tbCallback, EarlyStopping(monitor='val_loss',
                                                                                 patience=5)])  # ...holding out 10% of the data for validation
 score = model.evaluate(X_test, Y_test, verbose=1)  # Evaluate the trained model on the test set!
 

@@ -6,12 +6,14 @@ cap = cv2.VideoCapture(0)
 face_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 
-json_file = open('./models/model_20180207_1625.json', 'r')
+model="model_20180210_2055"
+
+json_file = open('./models/'+model+'.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 # load weights into new model
-loaded_model.load_weights("./models/model_20180207_1625.h5")
+loaded_model.load_weights("./models/"+model+".h5")
 print("Loaded model from disk")
 while True:
     ret, img = cap.read()

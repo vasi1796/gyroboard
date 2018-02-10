@@ -5,7 +5,7 @@ face_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_eye.xml')
-index = "1"
+index = "748"
 
 if __name__ == "__main__":
     while True:
@@ -18,13 +18,13 @@ if __name__ == "__main__":
             roi_gray = cv2.resize(roi_gray, (140, 50))
             no = int(index) + 1
             index = str(no)
-            #cv2.imshow("roi_eyes", roi_gray)
+            cv2.imshow("roi_eyes", roi_gray)
             if img is not None:
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
                 cl1 = clahe.apply(roi_gray)
                 cv2.imshow("cl", cl1)
-               #cv2.imwrite("right/img" + index + ".jpg", cl1)
+                cv2.imwrite("center/img" + index + ".jpg", cl1)
 
             """
             roi_color = img[int(y + 20):y + h, x:x + w]

@@ -28,7 +28,7 @@ only_center_files = [f for f in listdir(folder_center) if isfile(join(folder_cen
 
 for n in range(0, len(only_left_files)):
     mat = cv2.imread(join(folder_left, only_left_files[n]), 0)
-    if n == 900:
+    if n == 1000:
         train = 0
     if mat is not None:
         if train:
@@ -41,7 +41,7 @@ for n in range(0, len(only_left_files)):
 train = 1
 for n in range(0, len(only_right_files)):
     mat = cv2.imread(join(folder_right, only_right_files[n]), 0)
-    if n == 900:
+    if n == 1000:
         train = 0
     if mat is not None:
         if train:
@@ -54,7 +54,7 @@ for n in range(0, len(only_right_files)):
 train = 1
 for n in range(0, len(only_center_files)):
     mat = cv2.imread(join(folder_center, only_center_files[n]), 0)
-    if n == 900:
+    if n == 1000:
         train = 0
     if mat is not None:
         if train:
@@ -68,8 +68,8 @@ X_train = np.asarray(X_train)
 Y_train = np.asarray(Y_train)
 X_test = np.asarray(X_test)
 Y_test = np.asarray(Y_test)
-x_train_shape=X_train.shape
-x_test_shape=X_test.shape
+x_train_shape = X_train.shape
+x_test_shape = X_test.shape
 X_train.resize((x_train_shape[0], x_train_shape[1], x_train_shape[2], 1))
 X_test.resize((x_test_shape[0], x_test_shape[1], x_test_shape[2], 1))
 Y_train.resize((x_train_shape[0], 1))
