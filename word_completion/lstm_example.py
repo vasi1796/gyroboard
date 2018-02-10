@@ -1,23 +1,56 @@
-'''Example script to generate text from Nietzsche's writings.
-At least 20 epochs are required before the generated text
-starts sounding coherent.
-It is recommended to run this script on GPU, as recurrent
-networks are quite computationally intensive.
-If you try this script on new data, make sure your corpus
-has at least ~100k characters. ~1M is better.
-'''
-
 from __future__ import print_function
-from keras.callbacks import LambdaCallback
-from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.layers import LSTM
-from keras.optimizers import RMSprop
 from keras.utils.data_utils import get_file
-import numpy as np
-import random
-import sys
 import io
+import numpy as np
+from keras.models import Sequential, load_model
+from keras.layers import LSTM
+from keras.layers.core import Dense, Activation
+from keras.optimizers import RMSprop
+import pickle
+import heapq
+
+
+def sample(preds, top_n=3):
+    preds = np.asarray(preds).astype('float64')
+    preds = np.log(preds)
+    exp_preds = np.exp(preds)
+    preds = exp_preds / np.sum(exp_preds)
+
+    return heapq.nlargest(top_n, range(len(preds)), preds.take)
+
+
+def prepare_input(text):
+    x = np.zeros((1, SEQUENCE_LENGTH, len(chars)))
+
+    for t, char in enumerate(text):
+        x[0, t, char_indices[char]] = 1.
+
+    return x
+
+
+def predict_completion(text):
+    original_text = text
+    generated = text
+    completion = ''
+    while True:
+        x = prepare_input(text)
+        preds = model.predict(x, verbose=0)[0]
+        next_index = sample(preds, top_n=1)[0]
+        next_char = indices_char[next_index]
+
+        text = text[1:] + next_char
+        completion += next_char
+
+        if len(original_text + completion) + 2 > len(original_text) and next_char == ' ':
+            return completion
+
+
+def predict_completions(text, n=3):
+    x = prepare_input(text)
+    preds = model.predict(x, verbose=0)[0]
+    next_indices = sample(preds, n)
+    return [indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices]
+
 
 path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
 with io.open(path, encoding='utf-8') as f:
@@ -25,84 +58,52 @@ with io.open(path, encoding='utf-8') as f:
 print('corpus length:', len(text))
 
 chars = sorted(list(set(text)))
-print('total chars:', len(chars))
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
-# cut the text in semi-redundant sequences of maxlen characters
-maxlen = 40
+print('unique chars: ', len(chars))
+
+SEQUENCE_LENGTH = 40
 step = 3
 sentences = []
 next_chars = []
-for i in range(0, len(text) - maxlen, step):
-    sentences.append(text[i: i + maxlen])
-    next_chars.append(text[i + maxlen])
-print('nb sequences:', len(sentences))
+for i in range(0, len(text) - SEQUENCE_LENGTH, step):
+    sentences.append(text[i: i + SEQUENCE_LENGTH])
+    next_chars.append(text[i + SEQUENCE_LENGTH])
+print('num training examples: ', len(sentences))
 
-print('Vectorization...')
-x = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
+X = np.zeros((len(sentences), SEQUENCE_LENGTH, len(chars)), dtype=np.bool)
 y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
 for i, sentence in enumerate(sentences):
     for t, char in enumerate(sentence):
-        x[i, t, char_indices[char]] = 1
+        X[i, t, char_indices[char]] = 1
     y[i, char_indices[next_chars[i]]] = 1
 
-# build the model: a single LSTM
-print('Build model...')
 model = Sequential()
-model.add(LSTM(128, input_shape=(maxlen, len(chars))))
+model.add(LSTM(128, input_shape=(SEQUENCE_LENGTH, len(chars))))
 model.add(Dense(len(chars)))
 model.add(Activation('softmax'))
-
 optimizer = RMSprop(lr=0.01)
-model.compile(loss='categorical_crossentropy', optimizer=optimizer)
+model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+history = model.fit(X, y, validation_split=0.05, batch_size=128, epochs=20, shuffle=True).history
+model.save('keras_model.h5')
+pickle.dump(history, open("history.p", "wb"))
 
+model = load_model('keras_model.h5')
+history = pickle.load(open("history.p", "rb"))
 
-def sample(preds, temperature=1.0):
-    # helper function to sample an index from a probability array
-    preds = np.asarray(preds).astype('float64')
-    preds = np.log(preds) / temperature
-    exp_preds = np.exp(preds)
-    preds = exp_preds / np.sum(exp_preds)
-    probas = np.random.multinomial(1, preds, 1)
-    return np.argmax(probas)
+prepare_input("This is an example of input for our LSTM".lower())
 
+quotes = [
+    "It is not a lack of love, but a lack of friendship that makes unhappy marriages.",
+    "That which does not kill us makes us stronger.",
+    "I'm not upset that you lied to me, I'm upset that from now on I can't believe you.",
+    "And those who were seen dancing were thought to be insane by those who could not hear the music.",
+    "It is hard enough to remember my opinions, without also remembering my reasons for them!"
+]
 
-def on_epoch_end(epoch, logs):
-    # Function invoked at end of each epoch. Prints generated text.
+for q in quotes:
+    seq = q[:40].lower()
+    print(seq)
+    print(predict_completions(seq, 5))
     print()
-    print('----- Generating text after Epoch: %d' % epoch)
-
-    start_index = random.randint(0, len(text) - maxlen - 1)
-    for diversity in [0.2, 0.5, 1.0, 1.2]:
-        print('----- diversity:', diversity)
-
-        generated = ''
-        sentence = text[start_index: start_index + maxlen]
-        generated += sentence
-        print('----- Generating with seed: "' + sentence + '"')
-        sys.stdout.write(generated)
-
-        for i in range(400):
-            x_pred = np.zeros((1, maxlen, len(chars)))
-            for t, char in enumerate(sentence):
-                x_pred[0, t, char_indices[char]] = 1.
-
-            preds = model.predict(x_pred, verbose=0)[0]
-            next_index = sample(preds, diversity)
-            next_char = indices_char[next_index]
-
-            generated += next_char
-            sentence = sentence[1:] + next_char
-
-            sys.stdout.write(next_char)
-            sys.stdout.flush()
-        print()
-
-
-print_callback = LambdaCallback(on_epoch_end=on_epoch_end)
-
-model.fit(x, y,
-          batch_size=128,
-          epochs=60,
-          callbacks=[print_callback])

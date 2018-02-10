@@ -129,3 +129,5 @@ gaze_recognition/data/left/
 gaze_recognition/data/right/
 
 gaze_recognition/data/eyes_dataset\.pkl\.gz
+
+word_completion/history\.p
