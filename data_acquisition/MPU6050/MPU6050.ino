@@ -18,7 +18,7 @@
 #include <Wire.h>
 #include "Kalman.h" // Source: https://github.com/TKJElectronics/KalmanFilter
 
-#define RESTRICT_PITCH // Comment out to restrict roll to ±90deg instead - please read: http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf
+//#define RESTRICT_PITCH // Comment out to restrict roll to ±90deg instead - please read: http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf
 
 Kalman kalmanX; // Create the Kalman instances
 Kalman kalmanY;
@@ -94,7 +94,23 @@ void loop() {
   gyroX = (i2cData[8] << 8) | i2cData[9];
   gyroY = (i2cData[10] << 8) | i2cData[11];
   gyroZ = (i2cData[12] << 8) | i2cData[13];
-
+  if(accZ < 0)//360 degrees
+  {
+    if(accX < 0)
+    {
+      accX = -180-accX;
+    }else
+    {
+      accX = 180-accX;
+    }
+    if(accY < 0)
+    {
+      accY = -180-accY;
+    }else
+    {
+      accY = 180-accY;
+    }
+  }
   double dt = (double)(micros() - timer) / 1000000; // Calculate delta time
   timer = micros();
 
