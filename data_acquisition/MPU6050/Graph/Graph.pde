@@ -24,7 +24,7 @@ float[] kalmanY = new float[width];
 boolean drawValues  = false;
 
 void setup() {
-  size(width, height);
+  surface.setSize(width, height);
   println(Serial.list()); // Use this to print connected serial devices
   serial = new Serial(this, Serial.list()[0], 115200); // Set this to your serial port obtained using the line above
   serial.bufferUntil('\n'); // Buffer until line feed
