@@ -30,7 +30,6 @@ def prepare_input(text):
 
 def predict_completion(text):
     original_text = text
-    generated = text
     completion = ''
     while True:
         x = prepare_input(text)

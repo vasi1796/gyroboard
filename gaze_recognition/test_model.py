@@ -6,7 +6,7 @@ cap = cv2.VideoCapture(0)
 face_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 
-model="model_20180210_2055"
+model="model_20180305_1600"
 
 json_file = open('./models/'+model+'.json', 'r')
 loaded_model_json = json_file.read()

@@ -5,7 +5,7 @@ face_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(
     'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_eye.xml')
-index = "748"
+index = "1407"
 
 if __name__ == "__main__":
     while True:

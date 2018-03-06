@@ -19,6 +19,7 @@ X_test = []
 Y_test = []
 train = 1
 
+no_of_files=1700
 folder_left = './left'
 folder_right = './right'
 folder_center = './center'
@@ -28,7 +29,7 @@ only_center_files = [f for f in listdir(folder_center) if isfile(join(folder_cen
 
 for n in range(0, len(only_left_files)):
     mat = cv2.imread(join(folder_left, only_left_files[n]), 0)
-    if n == 1000:
+    if n == no_of_files:
         train = 0
     if mat is not None:
         if train:
@@ -41,7 +42,7 @@ for n in range(0, len(only_left_files)):
 train = 1
 for n in range(0, len(only_right_files)):
     mat = cv2.imread(join(folder_right, only_right_files[n]), 0)
-    if n == 1000:
+    if n == no_of_files:
         train = 0
     if mat is not None:
         if train:
@@ -54,7 +55,7 @@ for n in range(0, len(only_right_files)):
 train = 1
 for n in range(0, len(only_center_files)):
     mat = cv2.imread(join(folder_center, only_center_files[n]), 0)
-    if n == 1000:
+    if n == no_of_files:
         train = 0
     if mat is not None:
         if train:
