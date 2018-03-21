@@ -23,8 +23,8 @@ if __name__ == "__main__":
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
                 cl1 = clahe.apply(roi_gray)
-                cv2.imshow("cl", cl1)
-                cv2.imwrite("center/img" + index + ".jpg", cl1)
+                #cv2.imshow("cl", cl1)
+                #cv2.imwrite("center/img" + index + ".jpg", cl1)
 
             """
             roi_color = img[int(y + 20):y + h, x:x + w]
