@@ -1,8 +1,19 @@
 import sys
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 import datetime
 import numpy as np
 import serial
+import re
+from threading import Thread
+
+string_vect = []
+
+
+def processSerialString(serial_object):
+    while True:
+        angle_string = serial_object.readline().decode().strip('\t\r\n')
+        global string_vect
+        string_vect = re.split(r'\t+', angle_string)
 
 
 class keyboard_scroll(object):
@@ -10,12 +21,12 @@ class keyboard_scroll(object):
         self.label = QtWidgets.QLabel(Form)
         self.labels = []
         self.letter_list = []
-        self.horizontalIndex = 0
-        self.verticalIndex = 0
+        self.horizontalIndex = 15
+        self.verticalIndex = 15
         keyboard = "abcdefghijklmnopqrstuvwxyz1234567890"
         for letter in keyboard:
             self.letter_list.append(letter)
-        print(self.letter_list)
+        print(len(self.letter_list))
 
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -46,51 +57,68 @@ class keyboard_scroll(object):
             self.labels[index].setText(_translate("Form", self.letter_list[index]))
 
     def processAngles(self, angles_string):
-        # process angle string
-        return [True, True]
+        roll_kalman = float(angles_string[2])
+        yaw_kalman = float(angles_string[5])
+        if roll_kalman > 20:
+            return 1
+        elif roll_kalman < -20:
+            return 2
+        elif yaw_kalman > 20:
+            return 3
+        elif yaw_kalman < -20:
+            return 4
+        else:
+            return 5
 
     def moveList(self, index, direction):
-        if index is 31:
-            index = 0
-        if (direction is "up") or (direction is"right"):
-            index += 1
+        if (direction is "up") or (direction is "right"):
+            if index is 35:
+                index = 0
             localIndex = index
             if direction is "up":
                 for label_index in [5, 6, 2, 7, 8]:
                     self.labels[label_index].setText(self.letter_list[localIndex])
+                    if localIndex is 35:
+                        localIndex = -1
                     localIndex += 1
             else:
-                for label_index in range(4,-1,-1):
+                for label_index in range(5):
                     self.labels[label_index].setText(self.letter_list[localIndex])
+                    if localIndex is 35:
+                        localIndex = -1
                     localIndex += 1
-                    print(localIndex)
+            index += 1
         else:
-            index -= 1
+            if index is 0:
+                index = 35
             localIndex = index
             if direction is "down":
-                for label_index in [8, 7, 2, 6, 5]:
+                for label_index in [5, 6, 2, 7, 8]:
                     self.labels[label_index].setText(self.letter_list[localIndex])
                     localIndex -= 1
             else:
                 for label_index in range(5):
                     self.labels[label_index].setText(self.letter_list[localIndex])
                     localIndex -= 1
+            index -= 1
         return index
 
     def updateLabels(self, angles_string):
-        movements = self.processAngles(angles_string)
-        if movements[0] is True:
-            print("up")
-            self.verticalIndex=self.moveList(self.verticalIndex, "up")
-        else:
-            print("down")
-            #self.verticalIndex=self.moveList(self.verticalIndex, "down")
-        if movements[1] is True:
-            print("right")
-            #self.horizontalIndex=self.moveList(self.horizontalIndex, "right")
-        else:
-            print("left")
-            # self.horizontalIndex=self.moveList(self.horizontalIndex, "left")
+        movement = self.processAngles(angles_string)
+        if movement is 1:
+            self.verticalIndex = self.moveList(self.verticalIndex, "up")
+        elif movement is 2:
+            self.verticalIndex = self.moveList(self.verticalIndex, "down")
+        elif movement is 3:
+            self.horizontalIndex = self.moveList(self.horizontalIndex, "right")
+        elif movement is 4:
+            self.horizontalIndex = self.moveList(self.horizontalIndex, "left")
+
+    def getCenterLabel(self):
+        doc = QtGui.QTextDocument()
+        doc.setHtml(self.labels[2].text())
+        labelText = doc.toPlainText()
+        return labelText
 
 
 if __name__ == "__main__":
@@ -99,20 +127,25 @@ if __name__ == "__main__":
     ui = keyboard_scroll()
     ui.setupUi(Form)
     Form.show()
-    """ser = serial.Serial('\\.\COM6', 115200)
+    ser = serial.Serial('\\.\COM8', 115200)
     ser.close()
-    ser.open()"""
+    ser.open()
+    thread = Thread(target=processSerialString, args=(ser,))
+    thread.start()
 
 
     def update_label():
         current_time = str(datetime.datetime.now().time())
         ui.label.setText(current_time)
-        ui.updateLabels("12 13 14 15")
-        # print(ser.readline())
+        global string_vect
+        if len(string_vect) is 6:
+            temp = string_vect
+            ui.updateLabels(temp)
 
 
     timer = QtCore.QTimer()
     timer.timeout.connect(update_label)
-    timer.start(500)  # every 10,000 milliseconds
+    timer.start(250)  # every 10,000 milliseconds
 
+    # thread.join()
     sys.exit(app.exec_())

@@ -3,7 +3,6 @@ Serial serial;
 
 String stringGyroX, stringGyroY;
 String stringAccX, stringAccY;
-String stringCompX, stringCompY;
 String stringKalmanX, stringKalmanY;
 
 final int width = 800;
@@ -14,9 +13,6 @@ float[] gyroY = new float[width];
 
 float[] accX = new float[width];
 float[] accY = new float[width];
-
-float[] compX = new float[width];
-float[] compY = new float[width];
 
 float[] kalmanX = new float[width];
 float[] kalmanY = new float[width];
@@ -34,8 +30,6 @@ void setup() {
     gyroY[i] = height/2;
     accX[i] = height/2;
     accY[i] = height/2;
-    compX[i] = height/2;
-    compY[i] = height/2;
     kalmanX[i] = height/2;
     kalmanY[i] = height/2;
   }
@@ -72,14 +66,12 @@ void serialEvent (Serial serial) {
   // Get the ASCII strings:
   stringAccX = serial.readStringUntil('\t');
   stringGyroX = serial.readStringUntil('\t');
-  stringCompX = serial.readStringUntil('\t');
   stringKalmanX = serial.readStringUntil('\t');
 
   serial.readStringUntil('\t'); // Ignore extra tab
 
   stringAccY = serial.readStringUntil('\t');
   stringGyroY = serial.readStringUntil('\t');
-  stringCompY = serial.readStringUntil('\t');
   stringKalmanY = serial.readStringUntil('\t');
 
   serial.clear(); // Clear buffer
@@ -91,14 +83,12 @@ void serialEvent (Serial serial) {
 void printAxis() {
   print(stringGyroX);
   print(stringAccX);
-  print(stringCompX);
   print(stringKalmanX);
 
   print('\t');
 
   print(stringGyroY);
   print(stringAccY);
-  print(stringCompY);
   print(stringKalmanY);
 
   println();

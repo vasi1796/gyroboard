@@ -27,18 +27,6 @@ void convert() {
     accY[accY.length - 1] = map(float(stringAccY), minAngle, maxAngle, 0, height); // Convert to a float and map to the screen height, then save in buffer
   }
 
-  /* Convert the complementary filter x-axis */
-  if (stringCompX != null) {
-    stringCompX = trim(stringCompX); // Trim off any whitespace
-    compX[compX.length - 1] = map(float(stringCompX), minAngle, maxAngle, 0, height); // Convert to a float and map to the screen height, then save in buffer
-  }
-
-  /* Convert the complementary filter x-axis */
-  if (stringCompY != null) {
-    stringCompY = trim(stringCompY); // Trim off any whitespace
-    compY[compY.length - 1] = map(float(stringCompY), minAngle, maxAngle, 0, height); // Convert to a float and map to the screen height, then save in buffer
-  }
-
   /* Convert the kalman filter x-axis */
   if (stringKalmanX != null) {
     stringKalmanX = trim(stringKalmanX); // Trim off any whitespace

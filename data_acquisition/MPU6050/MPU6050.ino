@@ -29,7 +29,6 @@ double gyroX, gyroY, gyroZ;
 int16_t tempRaw;
 
 double gyroXangle, gyroYangle; // Angle calculate using the gyro only
-double compAngleX, compAngleY; // Calculated angle using a complementary filter
 double kalAngleX, kalAngleY; // Calculated angle using a Kalman filter
 
 uint32_t timer;
@@ -78,8 +77,6 @@ void setup() {
   kalmanY.setAngle(pitch);
   gyroXangle = roll;
   gyroYangle = pitch;
-  compAngleX = roll;
-  compAngleY = pitch;
 
   timer = micros();
 }
@@ -132,7 +129,6 @@ void loop() {
   // This fixes the transition problem when the accelerometer angle jumps between -180 and 180 degrees
   if ((roll < -90 && kalAngleX > 90) || (roll > 90 && kalAngleX < -90)) {
     kalmanX.setAngle(roll);
-    compAngleX = roll;
     kalAngleX = roll;
     gyroXangle = roll;
   } else
@@ -145,7 +141,6 @@ void loop() {
   // This fixes the transition problem when the accelerometer angle jumps between -180 and 180 degrees
   if ((pitch < -90 && kalAngleY > 90) || (pitch > 90 && kalAngleY < -90)) {
     kalmanY.setAngle(pitch);
-    compAngleY = pitch;
     kalAngleY = pitch;
     gyroYangle = pitch;
   } else
@@ -160,9 +155,6 @@ void loop() {
   gyroYangle += gyroYrate * dt;
   //gyroXangle += kalmanX.getRate() * dt; // Calculate gyro angle using the unbiased rate
   //gyroYangle += kalmanY.getRate() * dt;
-
-  compAngleX = 0.93 * (compAngleX + gyroXrate * dt) + 0.07 * roll; // Calculate the angle using a Complimentary filter
-  compAngleY = 0.93 * (compAngleY + gyroYrate * dt) + 0.07 * pitch;
 
   // Reset the gyro angle when it has drifted too much
   if (gyroXangle < -180 || gyroXangle > 180)
@@ -185,22 +177,13 @@ void loop() {
 
   Serial.print(roll); Serial.print("\t");
   Serial.print(gyroXangle); Serial.print("\t");
-  Serial.print(compAngleX); Serial.print("\t");
   Serial.print(kalAngleX); Serial.print("\t");
 
   Serial.print("\t");
 
   Serial.print(pitch); Serial.print("\t");
   Serial.print(gyroYangle); Serial.print("\t");
-  Serial.print(compAngleY); Serial.print("\t");
   Serial.print(kalAngleY); Serial.print("\t");
-
-#if 0 // Set to 1 to print the temperature
-  Serial.print("\t");
-
-  double temperature = (double)tempRaw / 340.0 + 36.53;
-  Serial.print(temperature); Serial.print("\t");
-#endif
 
   Serial.print("\r\n");
   delay(2);
