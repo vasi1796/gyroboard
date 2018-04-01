@@ -4,8 +4,20 @@ import datetime
 import serial
 import re
 from threading import Thread
+from GazeNN import GazeNN
 
 string_vect = []
+eye_position = -1
+init_index = 15
+form_width = 1500
+form_height = 400
+
+
+def process_gaze(network):
+    while True:
+        global eye_position
+        network.process_image()
+        #print(eye_position)
 
 
 def process_serial_string(serial_object):
@@ -18,42 +30,50 @@ def process_serial_string(serial_object):
 class KeyboardScroll(object):
     def __init__(self):
         self.label = QtWidgets.QLabel(Form)
-        self.labels = []
+        self.board_labels = []
+        self.pred_word_labels = []
         self.letter_list = []
-        self.horizontalIndex = 15
-        self.verticalIndex = 15
+        self.horizontalIndex = init_index
+        self.verticalIndex = init_index
         keyboard = "abcdefghijklmnopqrstuvwxyz1234567890"
         for letter in keyboard:
             self.letter_list.append(letter)
-        print(len(self.letter_list))
 
     def setup_ui(self, Form):
         Form.setObjectName("Form")
-        Form.resize(400, 400)
-        for index in range(0, 5):
+        Form.resize(form_width, form_height)
+        # horizontal keyboard
+        for index in range(5):
             label = QtWidgets.QLabel(Form)
-            label.setGeometry(QtCore.QRect(80 + 50 * index, 80, 40 + 50 * index, 20))
-            self.labels.append(label)
-        for index in range(0, 5):
+            label.setGeometry(QtCore.QRect(int(form_width / 2.3 + 50 * index), 80, 40 + 50 * index, 20))
+            self.board_labels.append(label)
+        # vertical keyboard
+        for index in range(5):
             label = QtWidgets.QLabel(Form)
             if index == 2:
                 continue
             else:
-                label.setGeometry(QtCore.QRect(180, 20 + 20 * index, 40, 20 + 20 * index))
-            self.labels.append(label)
-
-        self.label.setGeometry(QtCore.QRect(180, 200, 60, 20))
+                label.setGeometry(QtCore.QRect(int(form_width / 2.3 + 50 * 2), 20 + 20 * index, 40, 20 + 20 * index))
+            self.board_labels.append(label)
+        # predicted words
+        for index in range(3):
+            label = QtWidgets.QLabel(Form)
+            label.setGeometry(QtCore.QRect(int(form_width / 15 + 650 * index), 250, 40 + 50 * index, 20))
+            self.pred_word_labels.append(label)
+        self.label.setGeometry(QtCore.QRect(int(form_width / 2.3 + 50 * 2), 200, 60, 20))
         self.label.setObjectName("label")
 
-        self.retranslate_ui(Form)
+        self.init_ui_labels(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
-    def retranslate_ui(self, Form):
+    def init_ui_labels(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", "init clock"))
-        for index in range(0, len(self.labels)):
-            self.labels[index].setText(_translate("Form", self.letter_list[index]))
+        for index in range(0, len(self.board_labels)):
+            self.board_labels[index].setText(_translate("Form", self.letter_list[init_index + index]))
+        for index in range(0, len(self.pred_word_labels)):
+            self.pred_word_labels[index].setText(_translate("Form", "test" + str(index)))
 
     def process_angles(self, angles_string):
         roll_kalman = float(angles_string[2])
@@ -76,13 +96,13 @@ class KeyboardScroll(object):
             localIndex = index
             if direction is "up":
                 for label_index in [5, 6, 2, 7, 8]:
-                    self.labels[label_index].setText(self.letter_list[localIndex])
+                    self.board_labels[label_index].setText(self.letter_list[localIndex])
                     if localIndex is 35:
                         localIndex = -1
                     localIndex += 1
             else:
                 for label_index in range(5):
-                    self.labels[label_index].setText(self.letter_list[localIndex])
+                    self.board_labels[label_index].setText(self.letter_list[localIndex])
                     if localIndex is 35:
                         localIndex = -1
                     localIndex += 1
@@ -93,13 +113,13 @@ class KeyboardScroll(object):
             localIndex = index
             if direction is "down":
                 for label_index in [5, 6, 2, 7, 8]:
-                    self.labels[label_index].setText(self.letter_list[localIndex])
+                    self.board_labels[label_index].setText(self.letter_list[localIndex])
                     if localIndex is 35:
                         localIndex = -1
                     localIndex += 1
             else:
                 for label_index in range(5):
-                    self.labels[label_index].setText(self.letter_list[localIndex])
+                    self.board_labels[label_index].setText(self.letter_list[localIndex])
                     if localIndex is 35:
                         localIndex = -1
                     localIndex += 1
@@ -119,9 +139,17 @@ class KeyboardScroll(object):
 
     def get_center_label(self):
         doc = QtGui.QTextDocument()
-        doc.setHtml(self.labels[2].text())
+        doc.setHtml(self.board_labels[2].text())
         labelText = doc.toPlainText()
         return labelText
+
+    def color_word_label(self, position):
+        if position is "left":
+            self.pred_word_labels[0].setStyleSheet('color: blue')
+        elif position is "center":
+            self.pred_word_labels[1].setStyleSheet('color: blue')
+        elif position is "right":
+            self.pred_word_labels[1].setStyleSheet('color: blue')
 
 
 if __name__ == "__main__":
@@ -130,11 +158,17 @@ if __name__ == "__main__":
     ui = KeyboardScroll()
     ui.setup_ui(Form)
     Form.show()
+
     ser = serial.Serial('\\.\COM8', 115200)
     ser.close()
     ser.open()
-    thread = Thread(target=process_serial_string, args=(ser,))
-    thread.start()
+
+    gaze_nn = GazeNN('./models/gaze.json', './models/gaze.h5')
+    gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,))
+    gazeNN_thread.start()
+
+    arduino_thread = Thread(target=process_serial_string, args=(ser,))
+    arduino_thread.start()
 
 
     def update_label():
