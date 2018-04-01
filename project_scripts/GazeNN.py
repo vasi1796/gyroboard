@@ -14,6 +14,7 @@ class GazeNN(object):
         self.cap = cv2.VideoCapture(0)
         self.face_cascade = cv2.CascadeClassifier(
             'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
+        self.loaded_model.predict(np.zeros((1, 50, 140, 1)))
 
     def process_image(self):
         ret, img = self.cap.read()
@@ -33,5 +34,4 @@ class GazeNN(object):
             image = image.astype(np.float32)
             image /= np.max(image)  # Normalise data to [0, 1] range
             prediction = self.loaded_model.predict(image, batch_size=32, verbose=0)
-            print(prediction)
-            #return np.argmax(prediction)
+            return np.argmax(prediction)

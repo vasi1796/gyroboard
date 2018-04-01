@@ -16,8 +16,7 @@ form_height = 400
 def process_gaze(network):
     while True:
         global eye_position
-        network.process_image()
-        #print(eye_position)
+        eye_position = network.process_image()
 
 
 def process_serial_string(serial_object):
@@ -136,6 +135,7 @@ class KeyboardScroll(object):
             self.horizontalIndex = self.move_list(self.horizontalIndex, "right")
         elif movement is 4:
             self.horizontalIndex = self.move_list(self.horizontalIndex, "left")
+        self.color_word_label(eye_position)
 
     def get_center_label(self):
         doc = QtGui.QTextDocument()
@@ -144,12 +144,18 @@ class KeyboardScroll(object):
         return labelText
 
     def color_word_label(self, position):
-        if position is "left":
+        if position == 0:
             self.pred_word_labels[0].setStyleSheet('color: blue')
-        elif position is "center":
+            self.pred_word_labels[1].setStyleSheet('color: black')
+            self.pred_word_labels[2].setStyleSheet('color: black')
+        elif position == 2:
+            self.pred_word_labels[0].setStyleSheet('color: black')
             self.pred_word_labels[1].setStyleSheet('color: blue')
-        elif position is "right":
-            self.pred_word_labels[1].setStyleSheet('color: blue')
+            self.pred_word_labels[2].setStyleSheet('color: black')
+        elif position == 1:
+            self.pred_word_labels[0].setStyleSheet('color: black')
+            self.pred_word_labels[1].setStyleSheet('color: black')
+            self.pred_word_labels[2].setStyleSheet('color: blue')
 
 
 if __name__ == "__main__":
