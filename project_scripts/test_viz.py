@@ -20,6 +20,7 @@ class Direction(Enum):
     DOWN = 2
     RIGHT = 3
     LEFT = 4
+    SELECT = 5
 
 
 def process_gaze(network):
@@ -36,18 +37,20 @@ def process_serial_string(serial_object):
 
 
 def process_angles(angles_string):
-    roll_kalman = float(angles_string[2])
-    yaw_kalman = float(angles_string[5])
-    if roll_kalman > 20:
-        return Direction.UP
-    elif roll_kalman < -20:
-        return Direction.DOWN
+    yaw_kalman = float(angles_string[2])
+    roll_kalman = float(angles_string[5])
+    if roll_kalman < -170:
+        return Direction.SELECT
     elif yaw_kalman > 20:
-        return Direction.RIGHT
+        return Direction.UP
     elif yaw_kalman < -20:
+        return Direction.DOWN
+    elif roll_kalman > 20:
+        return Direction.RIGHT
+    elif roll_kalman < -20:
         return Direction.LEFT
     else:
-        return 5
+        return None
 
 
 class KeyboardScroll(object):
@@ -145,7 +148,15 @@ class KeyboardScroll(object):
             self.horizontalIndex = self.move_list(self.horizontalIndex, "right")
         elif movement is Direction.LEFT:
             self.horizontalIndex = self.move_list(self.horizontalIndex, "left")
+        elif movement is Direction.SELECT:
+            print(self.get_selected_word())
         self.color_word_label(eye_position)
+
+    def get_selected_word(self):
+        doc = QtGui.QTextDocument()
+        doc.setHtml(self.pred_word_labels[eye_position].text())
+        labelText = doc.toPlainText()
+        return labelText
 
     def get_center_label(self):
         doc = QtGui.QTextDocument()
