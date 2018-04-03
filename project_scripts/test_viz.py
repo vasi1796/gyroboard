@@ -5,6 +5,7 @@ import serial
 import re
 from threading import Thread
 from GazeNN import GazeNN
+from WordNN import WordNN
 from enum import Enum
 
 string_vect_mock = ["1", "2", "3", "4", "5", "22"]
