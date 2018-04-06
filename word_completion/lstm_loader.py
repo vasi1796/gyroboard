@@ -2,12 +2,13 @@ from __future__ import print_function
 from keras.utils.data_utils import get_file
 import io
 import numpy as np
-from keras.models import Sequential, load_model
-from keras.layers import LSTM
-from keras.layers.core import Dense, Activation
-from keras.optimizers import RMSprop
+from keras.models import load_model
+from threading import Thread
 import pickle
 import heapq
+import cv2
+
+letter_string = ""
 
 
 def sample(preds, top_n=3):
@@ -20,7 +21,7 @@ def sample(preds, top_n=3):
 
 
 def prepare_input(text):
-    x = np.zeros((1, SEQUENCE_LENGTH, len(chars)))
+    x = np.zeros((1, len(text), len(chars)))
 
     for t, char in enumerate(text):
         x[0, t, char_indices[char]] = 1.
@@ -48,7 +49,7 @@ def predict_completions(text, n=3):
     x = prepare_input(text)
     preds = model.predict(x, verbose=0)[0]
     next_indices = sample(preds, n)
-    return [indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices]
+    print([indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices])
 
 
 path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
@@ -78,16 +79,6 @@ for i, sentence in enumerate(sentences):
         X[i, t, char_indices[char]] = 1
     y[i, char_indices[next_chars[i]]] = 1
 
-model = Sequential()
-model.add(LSTM(128, input_shape=(SEQUENCE_LENGTH, len(chars))))
-model.add(Dense(len(chars)))
-model.add(Activation('softmax'))
-optimizer = RMSprop(lr=0.01)
-model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-history = model.fit(X, y, validation_split=0.05, batch_size=128, epochs=20, shuffle=True).history
-model.save('keras_model.h5')
-pickle.dump(history, open("history.p", "wb"))
-
 model = load_model('keras_model.h5')
 history = pickle.load(open("history.p", "rb"))
 
@@ -103,5 +94,17 @@ quotes = [
 for q in quotes:
     seq = q[:40].lower()
     print(seq)
-    print(predict_completions(seq, 5))
+    predict_completions(seq, 5)
     print()
+
+cap = cv2.VideoCapture(0)
+lstm_thread = Thread(target=predict_completions, args=(letter_string,5,))
+lstm_thread.start()
+while True:
+    ret, img = cap.read()
+    cv2.imshow("fr", img)
+    key = cv2.waitKey(1)
+    if key != -1:
+        global letter_string
+        letter_string+=chr(key)
+        #print(chr(key))

@@ -8,6 +8,7 @@ from GazeNN import GazeNN
 from WordNN import WordNN
 from enum import Enum
 
+
 string_vect_mock = ["1", "2", "3", "4", "5", "22"]
 string_vect = []
 eye_position = -1
@@ -179,6 +180,9 @@ class KeyboardScroll(object):
             self.pred_word_labels[1].setStyleSheet('color: black')
             self.pred_word_labels[2].setStyleSheet('color: blue')
 
+    def keyPressEvent(self, e):
+        print(e.key())
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
@@ -191,19 +195,19 @@ if __name__ == "__main__":
     gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,))
     gazeNN_thread.start()
 
-    ser = serial.Serial('\\.\COM8', 115200)
-    ser.close()
-    ser.open()
-    arduino_thread = Thread(target=process_serial_string, args=(ser,))
-    arduino_thread.start()
+    # ser = serial.Serial('\\.\COM8', 115200)
+    # ser.close()
+    # ser.open()
+    # arduino_thread = Thread(target=process_serial_string, args=(ser,))
+    # arduino_thread.start()
 
 
     def update_label():
         current_time = str(datetime.datetime.now().time())
         ui.label.setText(current_time)
         global string_vect
-        if len(string_vect) is 6:
-            temp = string_vect
+        if len(string_vect_mock) is 6:
+            temp = string_vect_mock
             ui.update_labels(temp)
 
 
