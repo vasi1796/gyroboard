@@ -3,12 +3,12 @@ from keras.utils.data_utils import get_file
 import io
 import numpy as np
 from keras.models import load_model
-from threading import Thread
 import pickle
 import heapq
 import cv2
 
-letter_string = ""
+letter_list = ['e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',
+               'e', 'e', 'e', 'e', ' ', 'h', 'e', 'l', 'l', 'o', ' ', 'm', 'y', ' ', 'n', 'a', 'm', 'e', ' ']
 
 
 def sample(preds, top_n=3):
@@ -46,10 +46,12 @@ def predict_completion(text):
 
 
 def predict_completions(text, n=3):
-    x = prepare_input(text)
-    preds = model.predict(x, verbose=0)[0]
-    next_indices = sample(preds, n)
-    print([indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices])
+    if len(text) is 40:
+        x = prepare_input(text)
+        preds = model.predict(x, verbose=0)[0]
+        next_indices = sample(preds, n)
+        print([indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices])
+
 
 
 path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
@@ -97,14 +99,21 @@ for q in quotes:
     predict_completions(seq, 5)
     print()
 
+# let = ''.join(letter_list)
+# test=let.lower()
+# print(let.lower())
+# print(len(let))
+# predict_completions(test,3)
+# print()
+
 cap = cv2.VideoCapture(0)
-lstm_thread = Thread(target=predict_completions, args=(letter_string,5,))
-lstm_thread.start()
 while True:
     ret, img = cap.read()
     cv2.imshow("fr", img)
     key = cv2.waitKey(1)
     if key != -1:
-        global letter_string
-        letter_string+=chr(key)
-        #print(chr(key))
+        letter_list.pop(0)
+        letter_list.append(chr(key))
+        letter_string = ''.join(letter_list)
+        letter_string = letter_string.lower()
+        predict_completions(letter_string, 3)
