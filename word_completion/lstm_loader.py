@@ -6,10 +6,12 @@ from keras.models import load_model
 import pickle
 import heapq
 import cv2
+from threading import Thread
 
 letter_list = ['e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',
-               'e', 'e', 'e', 'e', ' ', 'h', 'e', 'l', 'l', 'o', ' ', 'm', 'y', ' ', 'n', 'a', 'm', 'e', ' ']
-
+               'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e']
+letter_string = ""
+predictions = []
 
 def sample(preds, top_n=3):
     preds = np.asarray(preds).astype('float64')
@@ -43,6 +45,12 @@ def predict_completion(text):
 
         if len(original_text + completion) + 2 > len(original_text) and next_char == ' ':
             return completion
+
+def thread_pred():
+    while True:
+        if len(letter_string) is 40:
+            predict_completions(letter_string,3)
+            print()
 
 
 def predict_completions(text, n=3):
@@ -105,7 +113,8 @@ for q in quotes:
 # print(len(let))
 # predict_completions(test,3)
 # print()
-
+words_thread = Thread(target=thread_pred, args=())
+words_thread.start()
 cap = cv2.VideoCapture(0)
 while True:
     ret, img = cap.read()
@@ -116,4 +125,3 @@ while True:
         letter_list.append(chr(key))
         letter_string = ''.join(letter_list)
         letter_string = letter_string.lower()
-        predict_completions(letter_string, 3)

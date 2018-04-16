@@ -5,7 +5,7 @@ import serial
 import re
 from threading import Thread
 from GazeNN import GazeNN
-from WordNN import WordNN
+#from WordNN import WordNN
 from enum import Enum
 
 
@@ -179,9 +179,6 @@ class KeyboardScroll(object):
             self.pred_word_labels[0].setStyleSheet('color: black')
             self.pred_word_labels[1].setStyleSheet('color: black')
             self.pred_word_labels[2].setStyleSheet('color: blue')
-
-    def keyPressEvent(self, e):
-        print(e.key())
 
 
 if __name__ == "__main__":
