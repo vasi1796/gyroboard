@@ -5,7 +5,7 @@ import serial
 import re
 from threading import Thread
 from GazeNN import GazeNN
-#from WordNN import WordNN
+from WordNN import WordNN,letter_string,letter_list
 from enum import Enum
 
 
@@ -28,7 +28,13 @@ class Direction(Enum):
 def process_gaze(network):
     while True:
         global eye_position
-        eye_position = network.process_image()
+        eye_position,key = network.process_image()
+        if key != -1:
+            letter_list.pop(0)
+            letter_list.append(chr(key))
+            letter_string = ''.join(letter_list)
+            letter_string = letter_string.lower()
+            print(letter_string)
 
 
 def process_serial_string(serial_object):
@@ -63,7 +69,7 @@ class KeyboardScroll(object):
         self.letter_list = []
         self.horizontalIndex = init_index
         self.verticalIndex = init_index
-        keyboard = "abcdefghijklmnopqrstuvwxyz1234567890"
+        keyboard = "abcdefghijklmnopqrstuvwxyz1234567890 .,:"
         for letter in keyboard:
             self.letter_list.append(letter)
 
@@ -105,19 +111,19 @@ class KeyboardScroll(object):
 
     def move_list(self, index, direction):
         if (direction is "up") or (direction is "right"):
-            if index is 35:
+            if index is len(self.letter_list):
                 index = 0
             localIndex = index
             if direction is "up":
                 for label_index in [5, 6, 2, 7, 8]:
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is 35:
+                    if localIndex is len(self.letter_list)-1:
                         localIndex = -1
                     localIndex += 1
             else:
                 for label_index in range(5):
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is 35:
+                    if localIndex is len(self.letter_list)-1:
                         localIndex = -1
                     localIndex += 1
             index += 1
@@ -128,13 +134,13 @@ class KeyboardScroll(object):
             if direction is "down":
                 for label_index in [5, 6, 2, 7, 8]:
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is 35:
+                    if localIndex is len(self.letter_list)-1:
                         localIndex = -1
                     localIndex += 1
             else:
                 for label_index in range(5):
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is 35:
+                    if localIndex is len(self.letter_list)-1:
                         localIndex = -1
                     localIndex += 1
             index -= 1

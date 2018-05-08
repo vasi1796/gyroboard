@@ -13,6 +13,7 @@ letter_list = ['e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 
 letter_string = ""
 predictions = []
 
+
 def sample(preds, top_n=3):
     preds = np.asarray(preds).astype('float64')
     preds = np.log(preds)
@@ -46,10 +47,11 @@ def predict_completion(text):
         if len(original_text + completion) + 2 > len(original_text) and next_char == ' ':
             return completion
 
+
 def thread_pred():
     while True:
         if len(letter_string) is 40:
-            predict_completions(letter_string,3)
+            predict_completions(letter_string, 3)
             print()
 
 
@@ -59,7 +61,6 @@ def predict_completions(text, n=3):
         preds = model.predict(x, verbose=0)[0]
         next_indices = sample(preds, n)
         print([indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices])
-
 
 
 path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
