@@ -5,16 +5,16 @@ import serial
 import re
 from threading import Thread
 from GazeNN import GazeNN
-from WordNN import WordNN,letter_string,letter_list
+from WordNN import WordNN, letter_string, letter_list
 from enum import Enum
 
-
-string_vect_mock = ["1", "2", "3", "4", "5", "22"]
+# string_vect_mock = ["1", "2", "3", "4", "5", "22"]
 string_vect = []
 eye_position = -1
 init_index = 15
 form_width = 1500
 form_height = 400
+key_pressed = False
 
 
 class Direction(Enum):
@@ -28,13 +28,21 @@ class Direction(Enum):
 def process_gaze(network):
     while True:
         global eye_position
-        eye_position,key = network.process_image()
+        global key_pressed
+        eye_position, key = network.process_image()
         if key != -1:
-            letter_list.pop(0)
-            letter_list.append(chr(key))
-            letter_string = ''.join(letter_list)
-            letter_string = letter_string.lower()
-            print(letter_string)
+            key_pressed = True
+
+
+def process_word(network, ui_object):
+    while True:
+        global key_pressed
+        if key_pressed is True:
+            # letter_list.pop(0)
+            # letter_list.append(chr())
+            letter = ui_object.get_center_label()
+            print(letter)
+            key_pressed = False
 
 
 def process_serial_string(serial_object):
@@ -47,6 +55,7 @@ def process_serial_string(serial_object):
 def process_angles(angles_string):
     yaw_kalman = float(angles_string[2])
     roll_kalman = float(angles_string[5])
+    print(yaw_kalman)
     if roll_kalman < -170:
         return Direction.SELECT
     elif yaw_kalman > 20:
@@ -117,13 +126,13 @@ class KeyboardScroll(object):
             if direction is "up":
                 for label_index in [5, 6, 2, 7, 8]:
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is len(self.letter_list)-1:
+                    if localIndex is len(self.letter_list) - 1:
                         localIndex = -1
                     localIndex += 1
             else:
                 for label_index in range(5):
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is len(self.letter_list)-1:
+                    if localIndex is len(self.letter_list) - 1:
                         localIndex = -1
                     localIndex += 1
             index += 1
@@ -134,13 +143,13 @@ class KeyboardScroll(object):
             if direction is "down":
                 for label_index in [5, 6, 2, 7, 8]:
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is len(self.letter_list)-1:
+                    if localIndex is len(self.letter_list) - 1:
                         localIndex = -1
                     localIndex += 1
             else:
                 for label_index in range(5):
                     self.board_labels[label_index].setText(self.letter_list[localIndex])
-                    if localIndex is len(self.letter_list)-1:
+                    if localIndex is len(self.letter_list) - 1:
                         localIndex = -1
                     localIndex += 1
             index -= 1
@@ -194,23 +203,26 @@ if __name__ == "__main__":
     ui.setup_ui(Form)
     Form.show()
 
+    word_nn = WordNN('./models/word.h5')
+    wordNN_thread = Thread(target=process_word, args=(word_nn, ui,))
+    wordNN_thread.start()
+
     gaze_nn = GazeNN('./models/gaze.json', './models/gaze.h5')
     gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,))
     gazeNN_thread.start()
 
-    # ser = serial.Serial('\\.\COM8', 115200)
-    # ser.close()
-    # ser.open()
-    # arduino_thread = Thread(target=process_serial_string, args=(ser,))
-    # arduino_thread.start()
-
+    ser = serial.Serial('\\.\COM6', 115200)
+    ser.close()
+    ser.open()
+    arduino_thread = Thread(target=process_serial_string, args=(ser,))
+    arduino_thread.start()
 
     def update_label():
         current_time = str(datetime.datetime.now().time())
         ui.label.setText(current_time)
         global string_vect
-        if len(string_vect_mock) is 6:
-            temp = string_vect_mock
+        if len(string_vect) is 6:
+            temp = string_vect
             ui.update_labels(temp)
 
 

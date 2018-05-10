@@ -34,3 +34,4 @@ class GazeNN(object):
             image /= np.max(image)  # Normalise data to [0, 1] range
             prediction = self.loaded_model.predict(image, batch_size=32, verbose=0)
             return np.argmax(prediction), key_press
+        return -1,-1

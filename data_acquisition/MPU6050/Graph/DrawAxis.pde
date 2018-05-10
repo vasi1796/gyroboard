@@ -1,41 +1,41 @@
 void drawAxisX() {
   /* Draw gyro x-axis */
-  noFill();
-  stroke(255, 255, 0); // Yellow
-  // Redraw everything
-  beginShape();
-  vertex(0, gyroX[0]);
-  for (int i = 1; i < gyroX.length; i++) {
-    if ((gyroX[i] < height/4 && gyroX[i - 1] > height/4*3) || (gyroX[i] > height/4*3 && gyroX[i - 1] < height/4)) {
-      endShape();
-      beginShape();
-    }
-    vertex(i, gyroX[i]);
-  }
-  endShape();
+  //noFill();
+  //stroke(255, 255, 0); // Yellow
+  //// Redraw everything
+  //beginShape();
+  //vertex(0, gyroX[0]);
+  //for (int i = 1; i < gyroX.length; i++) {
+  //  if ((gyroX[i] < height/4 && gyroX[i - 1] > height/4*3) || (gyroX[i] > height/4*3 && gyroX[i - 1] < height/4)) {
+  //    endShape();
+  //    beginShape();
+  //  }
+  //  vertex(i, gyroX[i]);
+  //}
+  //endShape();
 
-  // Put all data one array back
-  for (int i = 1; i < gyroX.length;i++)
-    gyroX[i-1] = gyroX[i];
+  //// Put all data one array back
+  //for (int i = 1; i < gyroX.length;i++)
+  //  gyroX[i-1] = gyroX[i];
 
-  /* Draw acceleromter x-axis */
-  noFill();
-  stroke(0, 255, 0); // Green
-  // Redraw everything
-  beginShape();
-  vertex(0, accX[0]);
-  for (int i = 1; i < accX.length; i++) {
-    if ((accX[i] < height/4 && accX[i - 1] > height/4*3) || (accX[i] > height/4*3 && accX[i - 1] < height/4)) {
-      endShape();
-      beginShape();
-    }
-    vertex(i, accX[i]);
-  }
-  endShape();
+  ///* Draw acceleromter x-axis */
+  //noFill();
+  //stroke(0, 255, 0); // Green
+  //// Redraw everything
+  //beginShape();
+  //vertex(0, accX[0]);
+  //for (int i = 1; i < accX.length; i++) {
+  //  if ((accX[i] < height/4 && accX[i - 1] > height/4*3) || (accX[i] > height/4*3 && accX[i - 1] < height/4)) {
+  //    endShape();
+  //    beginShape();
+  //  }
+  //  vertex(i, accX[i]);
+  //}
+  //endShape();
 
-  // Put all data one array back
-  for (int i = 1; i < accX.length;i++)
-    accX[i-1] = accX[i];
+  //// Put all data one array back
+  //for (int i = 1; i < accX.length;i++)
+  //  accX[i-1] = accX[i];
 
   /* Draw kalman filter x-axis */
   noFill();
@@ -58,43 +58,43 @@ void drawAxisX() {
 }
 
 void drawAxisY() {
-  /* Draw gyro y-axis */
-  noFill();
-  stroke(255, 0, 255); // Purble
-  // Redraw everything
-  beginShape();
-  vertex(0, gyroY[0]);
-  for (int i = 1; i < gyroY.length; i++) {
-    if ((gyroY[i] < height/4 && gyroY[i - 1] > height/4*3) || (gyroY[i] > height/4*3 && gyroY[i - 1] < height/4)) {
-      endShape();
-      beginShape();
-    }
-    vertex(i, gyroY[i]);
-  }
-  endShape();
+  ///* Draw gyro y-axis */
+  //noFill();
+  //stroke(255, 0, 255); // Purble
+  //// Redraw everything
+  //beginShape();
+  //vertex(0, gyroY[0]);
+  //for (int i = 1; i < gyroY.length; i++) {
+  //  if ((gyroY[i] < height/4 && gyroY[i - 1] > height/4*3) || (gyroY[i] > height/4*3 && gyroY[i - 1] < height/4)) {
+  //    endShape();
+  //    beginShape();
+  //  }
+  //  vertex(i, gyroY[i]);
+  //}
+  //endShape();
 
-  // Put all data one array back
-  for (int i = 1; i < gyroY.length;i++)
-   gyroY[i-1] = gyroY[i];
+  //// Put all data one array back
+  //for (int i = 1; i < gyroY.length;i++)
+  // gyroY[i-1] = gyroY[i];
 
-  /* Draw acceleromter y-axis */
-  noFill();
-  stroke(0, 255, 255); // Light blue
-  // Redraw everything
-  beginShape();
-  vertex(0, accY[0]);
-  for (int i = 1; i < accY.length; i++) {
-    if ((accY[i] < height/4 && accY[i - 1] > height/4*3) || (accY[i] > height/4*3 && accY[i - 1] < height/4)) {
-      endShape();
-      beginShape();
-    }
-    vertex(i, accY[i]);
-  }
-  endShape();
+  ///* Draw acceleromter y-axis */
+  //noFill();
+  //stroke(0, 255, 255); // Light blue
+  //// Redraw everything
+  //beginShape();
+  //vertex(0, accY[0]);
+  //for (int i = 1; i < accY.length; i++) {
+  //  if ((accY[i] < height/4 && accY[i - 1] > height/4*3) || (accY[i] > height/4*3 && accY[i - 1] < height/4)) {
+  //    endShape();
+  //    beginShape();
+  //  }
+  //  vertex(i, accY[i]);
+  //}
+  //endShape();
 
-  // Put all data one array back
-  for (int i = 1; i < accY.length;i++)
-    accY[i-1] = accY[i];
+  //// Put all data one array back
+  //for (int i = 1; i < accY.length;i++)
+  //  accY[i-1] = accY[i];
 
   /* Draw kalman filter y-axis */
   noFill();

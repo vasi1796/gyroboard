@@ -11,11 +11,7 @@ predictions = []
 
 
 class WordNN:
-    def __init__(self, json_model_file, h5_model_file):
-        json_file = open(json_model_file, 'r')
-        self.loaded_model_json = json_file.read()
-        json_file.close()
-        self.loaded_model = 1
+    def __init__(self, h5_model_file):
         path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
         with io.open(path, encoding='utf-8') as f:
             self.text = f.read().lower()
@@ -25,6 +21,10 @@ class WordNN:
         self.indices_char = dict((i, c) for i, c in enumerate(self.chars))
 
         self.model = load_model(h5_model_file)
+
+        init_quote = "It is not a lack of love, but a lack of friendship that makes unhappy marriages."
+        seq = init_quote[:40].lower()
+        self.predict_completions(seq, 5)
 
     def sample(self, preds, top_n=3):
         preds = np.asarray(preds).astype('float64')

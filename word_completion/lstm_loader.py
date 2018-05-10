@@ -91,13 +91,13 @@ for i, sentence in enumerate(sentences):
     y[i, char_indices[next_chars[i]]] = 1
 
 model = load_model('keras_model.h5')
-history = pickle.load(open("history.p", "rb"))
+#history = pickle.load(open("history.p", "rb"))
 
 prepare_input("This is an example of input for our LSTM".lower())
 
 quotes = [
     "It is not a lack of love, but a lack of friendship that makes unhappy marriages.",
-    "That which does not kill us makes us stronger.",
+    "It is not a lack of love, but a lack of friendship that makes unhappy marriages.",
     "I'm not upset that you lied to me, I'm upset that from now on I can't believe you.",
     "And those who were seen dancing were thought to be insane by those who could not hear the music.",
     "It is hard enough to remember my opinions, without also remembering my reasons for them!"
