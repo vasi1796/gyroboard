@@ -10,6 +10,7 @@ from enum import Enum
 
 # string_vect_mock = ["1", "2", "3", "4", "5", "22"]
 string_vect = []
+word_vect=[]
 eye_position = -1
 init_index = 15
 form_width = 1500
@@ -37,11 +38,14 @@ def process_gaze(network):
 def process_word(network, ui_object):
     while True:
         global key_pressed
+        global word_vect
         if key_pressed is True:
-            # letter_list.pop(0)
-            # letter_list.append(chr())
             letter = ui_object.get_center_label()
-            print(letter)
+            letter_list.pop(0)
+            letter_list.append(letter)
+            letter_string = ''.join(letter_list)
+            letter_string = letter_string.lower()
+            word_vect=network.predict_completions(letter_string, 3)
             key_pressed = False
 
 
@@ -55,7 +59,6 @@ def process_serial_string(serial_object):
 def process_angles(angles_string):
     yaw_kalman = float(angles_string[2])
     roll_kalman = float(angles_string[5])
-    print(yaw_kalman)
     if roll_kalman < -170:
         return Direction.SELECT
     elif yaw_kalman > 20:
@@ -167,6 +170,10 @@ class KeyboardScroll(object):
             self.horizontalIndex = self.move_list(self.horizontalIndex, "left")
         elif movement is Direction.SELECT:
             print(self.get_selected_word())
+        if len(word_vect) == 3:
+            self.pred_word_labels[0].setText(word_vect[0])
+            self.pred_word_labels[1].setText(word_vect[1])
+            self.pred_word_labels[2].setText(word_vect[2])
         self.color_word_label(eye_position)
 
     def get_selected_word(self):

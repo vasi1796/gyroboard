@@ -62,5 +62,5 @@ class WordNN:
             x = self.prepare_input(text)
             preds = self.model.predict(x, verbose=0)[0]
             next_indices = self.sample(preds, n)
-            print([self.indices_char[idx] + self.predict_completion(text[1:] + self.indices_char[idx]) for idx in next_indices])
+            return [self.indices_char[idx] + self.predict_completion(text[1:] + self.indices_char[idx]) for idx in next_indices]
 
