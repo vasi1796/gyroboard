@@ -26,11 +26,12 @@ class GazeNN(object):
             clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
             cl1 = clahe.apply(roi_gray)
             cv2.imshow('face', cl1)
-            cv2.waitKey(1)
+            key_press=cv2.waitKey(1)
             # prepare input for model
             image = np.asarray(roi_gray)
             image.resize((1, 50, 140, 1))
             image = image.astype(np.float32)
             image /= np.max(image)  # Normalise data to [0, 1] range
             prediction = self.loaded_model.predict(image, batch_size=32, verbose=0)
-            return np.argmax(prediction)
+            return np.argmax(prediction), key_press
+        return -1,-1
