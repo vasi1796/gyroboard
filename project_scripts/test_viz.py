@@ -15,7 +15,6 @@ eye_position = -1
 init_index = 15
 form_width = 1500
 form_height = 400
-key_pressed = False
 
 
 class Direction(Enum):
@@ -26,27 +25,19 @@ class Direction(Enum):
     SELECT = 5
 
 
-def process_gaze(network):
+def process_gaze(gaze,word, ui):
     while True:
         global eye_position
         global key_pressed
-        eye_position, key = network.process_image()
-        if key != -1:
-            key_pressed = True
-
-
-def process_word(network, ui_object):
-    while True:
-        global key_pressed
         global word_vect
-        if key_pressed is True:
-            letter = ui_object.get_center_label()
+        eye_position, key = gaze.process_image()
+        if key != -1:
+            letter = ui.get_center_label()
             letter_list.pop(0)
             letter_list.append(letter)
             letter_string = ''.join(letter_list)
             letter_string = letter_string.lower()
-            word_vect=network.predict_completions(letter_string, 3)
-            key_pressed = False
+            word_vect = word.predict_completions(letter_string, 3)
 
 
 def process_serial_string(serial_object):
@@ -211,11 +202,8 @@ if __name__ == "__main__":
     Form.show()
 
     word_nn = WordNN('./models/word.h5')
-    wordNN_thread = Thread(target=process_word, args=(word_nn, ui,))
-    wordNN_thread.start()
-
     gaze_nn = GazeNN('./models/gaze.json', './models/gaze.h5')
-    gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,))
+    gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,word_nn, ui,))
     gazeNN_thread.start()
 
     ser = serial.Serial('\\.\COM6', 115200)
