@@ -63,7 +63,8 @@ def predict_completions(text, n=3):
         print([indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices])
 
 
-path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
+#path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
+path = 'C:/Users/vasy1/Dropbox/ro_dic.txt'
 with io.open(path, encoding='utf-8') as f:
     text = f.read().lower()
 print('corpus length:', len(text))
@@ -90,17 +91,14 @@ for i, sentence in enumerate(sentences):
         X[i, t, char_indices[char]] = 1
     y[i, char_indices[next_chars[i]]] = 1
 
-model = load_model('keras_model.h5')
+model = load_model('ro_keras_model.h5')
 #history = pickle.load(open("history.p", "rb"))
 
 prepare_input("This is an example of input for our LSTM".lower())
 
 quotes = [
     "It is not a lack of love, but a lack of friendship that makes unhappy marriages.",
-    "It is not a lack of love, but a lack of friendship that makes unhappy marriages.",
-    "I'm not upset that you lied to me, I'm upset that from now on I can't believe you.",
-    "And those who were seen dancing were thought to be insane by those who could not hear the music.",
-    "It is hard enough to remember my opinions, without also remembering my reasons for them!"
+
 ]
 for q in quotes:
     seq = q[:40].lower()

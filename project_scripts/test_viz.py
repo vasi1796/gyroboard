@@ -30,9 +30,12 @@ def process_gaze(gaze,word, ui):
         global eye_position
         global key_pressed
         global word_vect
+        global letter_string
         eye_position, key = gaze.process_image()
         if key != -1:
             letter = ui.get_center_label()
+            if letter is '':
+                letter = ' '
             letter_list.pop(0)
             letter_list.append(letter)
             letter_string = ''.join(letter_list)
@@ -110,7 +113,7 @@ class KeyboardScroll(object):
         for index in range(0, len(self.board_labels)):
             self.board_labels[index].setText(_translate("Form", self.letter_list[init_index + index]))
         for index in range(0, len(self.pred_word_labels)):
-            self.pred_word_labels[index].setText(_translate("Form", "test" + str(index)))
+            self.pred_word_labels[index].setText(_translate("Form", "mock" + str(index)))
 
     def move_list(self, index, direction):
         if (direction is "up") or (direction is "right"):
@@ -132,7 +135,7 @@ class KeyboardScroll(object):
             index += 1
         else:
             if index is 0:
-                index = 35
+                index = len(self.letter_list) - 1
             localIndex = index
             if direction is "down":
                 for label_index in [5, 6, 2, 7, 8]:
@@ -162,9 +165,11 @@ class KeyboardScroll(object):
         elif movement is Direction.SELECT:
             print(self.get_selected_word())
         if len(word_vect) == 3:
-            self.pred_word_labels[0].setText(word_vect[0])
-            self.pred_word_labels[1].setText(word_vect[1])
-            self.pred_word_labels[2].setText(word_vect[2])
+            global letter_string
+            prefix = letter_string.split(" ")
+            self.pred_word_labels[0].setText(prefix[-1]+word_vect[0])
+            self.pred_word_labels[1].setText(prefix[-1]+word_vect[1])
+            self.pred_word_labels[2].setText(prefix[-1]+word_vect[2])
         self.color_word_label(eye_position)
 
     def get_selected_word(self):
@@ -201,7 +206,7 @@ if __name__ == "__main__":
     ui.setup_ui(Form)
     Form.show()
 
-    word_nn = WordNN('./models/word.h5')
+    word_nn = WordNN('./models/ro_word.h5')
     gaze_nn = GazeNN('./models/gaze.json', './models/gaze.h5')
     gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,word_nn, ui,))
     gazeNN_thread.start()

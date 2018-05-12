@@ -5,14 +5,15 @@ import numpy as np
 from keras.models import load_model
 import heapq
 letter_list = ['e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',
-               'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e']
+               'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', ' ']
 letter_string = ""
 predictions = []
 
 
 class WordNN:
     def __init__(self, h5_model_file):
-        path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
+        path = './models/ro_dic.txt'
+        #path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
         with io.open(path, encoding='utf-8') as f:
             self.text = f.read().lower()
 

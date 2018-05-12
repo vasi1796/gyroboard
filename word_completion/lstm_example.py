@@ -51,7 +51,8 @@ def predict_completions(text, n=3):
     return [indices_char[idx] + predict_completion(text[1:] + indices_char[idx]) for idx in next_indices]
 
 
-path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
+#path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
+path = 'ro_dic.txt'
 with io.open(path, encoding='utf-8') as f:
     text = f.read().lower()
 print('corpus length:', len(text))
@@ -85,11 +86,11 @@ model.add(Activation('softmax'))
 optimizer = RMSprop(lr=0.01)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 history = model.fit(X, y, validation_split=0.05, batch_size=128, epochs=20, shuffle=True).history
-model.save('keras_model.h5')
-pickle.dump(history, open("history.p", "wb"))
+model.save('ro_keras_model.h5')
+pickle.dump(history, open("ro_history.p", "wb"))
 
-model = load_model('keras_model.h5')
-history = pickle.load(open("history.p", "rb"))
+model = load_model('ro_keras_model.h5')
+history = pickle.load(open("ro_history.p", "rb"))
 
 prepare_input("This is an example of input for our LSTM".lower())
 
