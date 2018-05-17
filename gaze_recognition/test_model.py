@@ -4,7 +4,7 @@ import numpy as np
 
 cap = cv2.VideoCapture(0)
 face_cascade = cv2.CascadeClassifier(
-    'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
+    'C:/Users/vasy1/AppData/Local/Continuum/anaconda3/pkgs/opencv-3.3.1-py36h20b85fd_1/Library/etc/haarcascades/haarcascade_frontalface_default.xml')
 
 model="model_20180305_1600"
 
@@ -18,9 +18,12 @@ print("Loaded model from disk")
 while True:
     ret, img = cap.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imshow("orig", img)
+    cv2.imshow("gray",gray)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     for (x, y, w, h) in faces:
         #preprocess image
+        cv2.imshow("faceall",gray[y:y + h, x:x + w])
         roi_gray = gray[int(y + 30):int(y + h / 1.9), x + 25:x + w - 25]
         roi_gray = cv2.resize(roi_gray, (140, 50))
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))

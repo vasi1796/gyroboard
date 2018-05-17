@@ -13,7 +13,7 @@ string_vect = []
 word_vect=[]
 eye_position = -1
 init_index = 15
-form_width = 1500
+form_width = 1600
 form_height = 400
 
 
@@ -69,7 +69,6 @@ def process_angles(angles_string):
 
 class KeyboardScroll(object):
     def __init__(self):
-        self.label = QtWidgets.QLabel(Form)
         self.board_labels = []
         self.pred_word_labels = []
         self.letter_list = []
@@ -98,10 +97,8 @@ class KeyboardScroll(object):
         # predicted words
         for index in range(3):
             label = QtWidgets.QLabel(Form)
-            label.setGeometry(QtCore.QRect(int(form_width / 15 + 650 * index), 250, 40 + 50 * index, 20))
+            label.setGeometry(QtCore.QRect(int(form_width / 15 + 650 * index), 250, 100 + 50 * index, 20))
             self.pred_word_labels.append(label)
-        self.label.setGeometry(QtCore.QRect(int(form_width / 2.3 + 50 * 2), 200, 60, 20))
-        self.label.setObjectName("label")
 
         self.init_ui_labels(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -109,11 +106,14 @@ class KeyboardScroll(object):
     def init_ui_labels(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label.setText(_translate("Form", "init clock"))
+        newfont = QtGui.QFont("Times", 15, QtGui.QFont.Bold)
+
         for index in range(0, len(self.board_labels)):
             self.board_labels[index].setText(_translate("Form", self.letter_list[init_index + index]))
+            self.board_labels[index].setFont(newfont)
         for index in range(0, len(self.pred_word_labels)):
             self.pred_word_labels[index].setText(_translate("Form", "mock" + str(index)))
+            self.pred_word_labels[index].setFont(newfont)
 
     def move_list(self, index, direction):
         if (direction is "up") or (direction is "right"):
@@ -211,7 +211,7 @@ if __name__ == "__main__":
     gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,word_nn, ui,))
     gazeNN_thread.start()
 
-    ser = serial.Serial('\\.\COM6', 115200)
+    ser = serial.Serial('\\.\COM3', 115200)
     ser.close()
     ser.open()
     arduino_thread = Thread(target=process_serial_string, args=(ser,))
@@ -219,7 +219,6 @@ if __name__ == "__main__":
 
     def update_label():
         current_time = str(datetime.datetime.now().time())
-        ui.label.setText(current_time)
         global string_vect
         if len(string_vect) is 6:
             temp = string_vect

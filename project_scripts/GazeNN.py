@@ -12,7 +12,7 @@ class GazeNN(object):
         self.loaded_model.load_weights(h5_model_file)
         self.cap = cv2.VideoCapture(0)
         self.face_cascade = cv2.CascadeClassifier(
-            'C:/Users/vasy1/Anaconda2/envs/tensorflow/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
+            'C:/Users/vasy1/AppData/Local/Continuum/anaconda3/pkgs/opencv-3.3.1-py36h20b85fd_1/Library/etc/haarcascades/haarcascade_frontalface_default.xml')
         self.loaded_model.predict(np.zeros((1, 50, 140, 1)))
 
     def process_image(self):

@@ -19,42 +19,42 @@ void drawAxisX() {
   //  gyroX[i-1] = gyroX[i];
 
   ///* Draw acceleromter x-axis */
-  //noFill();
-  //stroke(0, 255, 0); // Green
-  //// Redraw everything
-  //beginShape();
-  //vertex(0, accX[0]);
-  //for (int i = 1; i < accX.length; i++) {
-  //  if ((accX[i] < height/4 && accX[i - 1] > height/4*3) || (accX[i] > height/4*3 && accX[i - 1] < height/4)) {
-  //    endShape();
-  //    beginShape();
-  //  }
-  //  vertex(i, accX[i]);
-  //}
-  //endShape();
-
-  //// Put all data one array back
-  //for (int i = 1; i < accX.length;i++)
-  //  accX[i-1] = accX[i];
-
-  /* Draw kalman filter x-axis */
   noFill();
-  stroke(255, 0, 0);// Red
+  stroke(255, 0, 0); // Green
   // Redraw everything
   beginShape();
-  vertex(0, kalmanX[0]);
-  for (int i = 1; i < kalmanX.length; i++) {
-    if ((kalmanX[i] < height/4 && kalmanX[i - 1] > height/4*3) || (kalmanX[i] > height/4*3 && kalmanX[i - 1] < height/4)) {
+  vertex(0, accX[0]);
+  for (int i = 1; i < accX.length; i++) {
+    if ((accX[i] < height/4 && accX[i - 1] > height/4*3) || (accX[i] > height/4*3 && accX[i - 1] < height/4)) {
       endShape();
       beginShape();
     }
-    vertex(i, kalmanX[i]);
+    vertex(i, accX[i]);
   }
   endShape();
 
   // Put all data one array back
-  for (int i = 1; i < kalmanX.length; i++)
-    kalmanX[i-1] = kalmanX[i];
+  for (int i = 1; i < accX.length;i++)
+    accX[i-1] = accX[i];
+
+  /* Draw kalman filter x-axis */
+  //noFill();
+  //stroke(255, 0, 0);// Red
+  //// Redraw everything
+  //beginShape();
+  //vertex(0, kalmanX[0]);
+  //for (int i = 1; i < kalmanX.length; i++) {
+  //  if ((kalmanX[i] < height/4 && kalmanX[i - 1] > height/4*3) || (kalmanX[i] > height/4*3 && kalmanX[i - 1] < height/4)) {
+  //    endShape();
+  //    beginShape();
+  //  }
+  //  vertex(i, kalmanX[i]);
+  //}
+  //endShape();
+
+  //// Put all data one array back
+  //for (int i = 1; i < kalmanX.length; i++)
+  //  kalmanX[i-1] = kalmanX[i];
 }
 
 void drawAxisY() {
@@ -77,41 +77,41 @@ void drawAxisY() {
   //for (int i = 1; i < gyroY.length;i++)
   // gyroY[i-1] = gyroY[i];
 
-  ///* Draw acceleromter y-axis */
-  //noFill();
-  //stroke(0, 255, 255); // Light blue
-  //// Redraw everything
-  //beginShape();
-  //vertex(0, accY[0]);
-  //for (int i = 1; i < accY.length; i++) {
-  //  if ((accY[i] < height/4 && accY[i - 1] > height/4*3) || (accY[i] > height/4*3 && accY[i - 1] < height/4)) {
-  //    endShape();
-  //    beginShape();
-  //  }
-  //  vertex(i, accY[i]);
-  //}
-  //endShape();
-
-  //// Put all data one array back
-  //for (int i = 1; i < accY.length;i++)
-  //  accY[i-1] = accY[i];
-
-  /* Draw kalman filter y-axis */
+  /* Draw acceleromter y-axis */
   noFill();
-  stroke(0, 0, 0); // Black
+  stroke(0, 0, 0); // Light blue
   // Redraw everything
   beginShape();
-  vertex(0, kalmanY[0]);
-  for (int i = 1; i < kalmanY.length; i++) {
-    if ((kalmanY[i] < height/4 && kalmanY[i - 1] > height/4*3) || (kalmanY[i] > height/4*3 && kalmanY[i - 1] < height/4)) {
+  vertex(0, accY[0]);
+  for (int i = 1; i < accY.length; i++) {
+    if ((accY[i] < height/4 && accY[i - 1] > height/4*3) || (accY[i] > height/4*3 && accY[i - 1] < height/4)) {
       endShape();
       beginShape();
     }
-    vertex(i, kalmanY[i]);
+    vertex(i, accY[i]);
   }
   endShape();
 
   // Put all data one array back
-  for (int i = 1; i<kalmanY.length;i++)
-    kalmanY[i-1] = kalmanY[i];
+  for (int i = 1; i < accY.length;i++)
+    accY[i-1] = accY[i];
+
+  /* Draw kalman filter y-axis */
+  //noFill();
+  //stroke(0, 0, 0); // Black
+  //// Redraw everything
+  //beginShape();
+  //vertex(0, kalmanY[0]);
+  //for (int i = 1; i < kalmanY.length; i++) {
+  //  if ((kalmanY[i] < height/4 && kalmanY[i - 1] > height/4*3) || (kalmanY[i] > height/4*3 && kalmanY[i - 1] < height/4)) {
+  //    endShape();
+  //    beginShape();
+  //  }
+  //  vertex(i, kalmanY[i]);
+  //}
+  //endShape();
+
+  //// Put all data one array back
+  //for (int i = 1; i<kalmanY.length;i++)
+  //  kalmanY[i-1] = kalmanY[i];
 }
