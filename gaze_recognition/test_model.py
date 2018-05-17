@@ -18,12 +18,12 @@ print("Loaded model from disk")
 while True:
     ret, img = cap.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imshow("orig", img)
-    cv2.imshow("gray",gray)
+    #cv2.imshow("orig", img)
+    #cv2.imshow("gray",gray)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     for (x, y, w, h) in faces:
         #preprocess image
-        cv2.imshow("faceall",gray[y:y + h, x:x + w])
+        #cv2.imshow("faceall",gray[y:y + h, x:x + w])
         roi_gray = gray[int(y + 30):int(y + h / 1.9), x + 25:x + w - 25]
         roi_gray = cv2.resize(roi_gray, (140, 50))
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(5, 5))
