@@ -5,7 +5,7 @@ import numpy as np
 from keras.models import Sequential, load_model
 from keras.layers import LSTM,Dropout
 from keras.layers.core import Dense, Activation
-from keras.optimizers import RMSprop
+from keras.optimizers import RMSprop,Adam
 from keras.callbacks import TensorBoard,EarlyStopping
 import pickle
 import heapq
@@ -81,11 +81,11 @@ for i, sentence in enumerate(sentences):
     y[i, char_indices[next_chars[i]]] = 1
 
 model = Sequential()
-model.add(LSTM(128, input_shape=(SEQUENCE_LENGTH, len(chars))))
+model.add(LSTM(256, input_shape=(SEQUENCE_LENGTH, len(chars))))
 model.add(Dropout(0.2))
 model.add(Dense(len(chars)))
 model.add(Activation('softmax'))
-optimizer = RMSprop(lr=0.01)
+optimizer = Adam(lr=0.01)
 tbCallback = TensorBoard(log_dir='./Graph', histogram_freq=5, write_graph=True, write_images=True)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 history = model.fit(X, y, validation_split=0.05, batch_size=128, epochs=20, shuffle=True, callbacks=[tbCallback,EarlyStopping(monitor='val_loss',

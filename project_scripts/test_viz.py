@@ -10,7 +10,7 @@ from enum import Enum
 
 # string_vect_mock = ["1", "2", "3", "4", "5", "22"]
 string_vect = []
-word_vect=[]
+word_vect = []
 eye_position = -1
 init_index = 15
 form_width = 1600
@@ -25,7 +25,7 @@ class Direction(Enum):
     SELECT = 5
 
 
-def process_gaze(gaze,word, ui):
+def process_gaze(gaze, word, ui):
     while True:
         global eye_position
         global key_pressed
@@ -53,7 +53,7 @@ def process_serial_string(serial_object):
 def process_angles(angles_string):
     yaw_kalman = float(angles_string[2])
     roll_kalman = float(angles_string[5])
-    if roll_kalman < -170:
+    if roll_kalman > 120:
         return Direction.SELECT
     elif yaw_kalman > 20:
         return Direction.UP
@@ -74,7 +74,7 @@ class KeyboardScroll(object):
         self.letter_list = []
         self.horizontalIndex = init_index
         self.verticalIndex = init_index
-        keyboard = "abcdefghijklmnopqrstuvwxyz1234567890 .,:"
+        keyboard = "abcdefghijklmnopqrstuvwxyz1234567890 .,:-?!"
         for letter in keyboard:
             self.letter_list.append(letter)
 
@@ -167,9 +167,9 @@ class KeyboardScroll(object):
         if len(word_vect) == 3:
             global letter_string
             prefix = letter_string.split(" ")
-            self.pred_word_labels[0].setText(prefix[-1]+word_vect[0])
-            self.pred_word_labels[1].setText(prefix[-1]+word_vect[1])
-            self.pred_word_labels[2].setText(prefix[-1]+word_vect[2])
+            self.pred_word_labels[0].setText(prefix[-1] + word_vect[0])
+            self.pred_word_labels[1].setText(prefix[-1] + word_vect[1])
+            self.pred_word_labels[2].setText(prefix[-1] + word_vect[2])
         self.color_word_label(eye_position)
 
     def get_selected_word(self):
@@ -206,9 +206,9 @@ if __name__ == "__main__":
     ui.setup_ui(Form)
     Form.show()
 
-    word_nn = WordNN('./models/ro_word.h5')
+    word_nn = WordNN('./models/ro_keras_model.h5')
     gaze_nn = GazeNN('./models/gaze.json', './models/gaze.h5')
-    gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn,word_nn, ui,))
+    gazeNN_thread = Thread(target=process_gaze, args=(gaze_nn, word_nn, ui,))
     gazeNN_thread.start()
 
     ser = serial.Serial('\\.\COM3', 115200)
@@ -216,6 +216,7 @@ if __name__ == "__main__":
     ser.open()
     arduino_thread = Thread(target=process_serial_string, args=(ser,))
     arduino_thread.start()
+
 
     def update_label():
         global string_vect
@@ -226,7 +227,7 @@ if __name__ == "__main__":
 
     timer = QtCore.QTimer()
     timer.timeout.connect(update_label)
-    timer.start(250)  # every 10,000 milliseconds
+    timer.start(350)  # every 10,000 milliseconds
 
     # thread.join()
     sys.exit(app.exec_())

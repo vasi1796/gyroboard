@@ -12,7 +12,7 @@ predictions = []
 
 class WordNN:
     def __init__(self, h5_model_file):
-        path = './models/ro_dic.txt'
+        path = './models/mi_ro.txt'
         #path = get_file('nietzsche.txt', origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
         with io.open(path, encoding='utf-8') as f:
             self.text = f.read().lower()

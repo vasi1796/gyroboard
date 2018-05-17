@@ -86,7 +86,7 @@ model.add(Activation('softmax'))
 tbCallback = TensorBoard(log_dir='./Graph', histogram_freq=25, write_graph=True, write_images=True)
 
 model.compile(loss='categorical_crossentropy',  # using the cross-entropy loss function
-              optimizer='adam',  # using the Adam optimiser
+              optimizer='sgd',  # using the Adam optimiser
               metrics=['accuracy'])  # reporting the accuracy
 
 model.fit(X_train, Y_train,  # Train the model using the training set...
