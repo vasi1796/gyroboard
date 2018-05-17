@@ -218,7 +218,6 @@ if __name__ == "__main__":
     arduino_thread.start()
 
     def update_label():
-        current_time = str(datetime.datetime.now().time())
         global string_vect
         if len(string_vect) is 6:
             temp = string_vect
